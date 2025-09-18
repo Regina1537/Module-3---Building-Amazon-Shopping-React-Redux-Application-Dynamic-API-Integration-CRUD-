@@ -1,0 +1,50 @@
+{
+  "name": "amazon-shopping-dashboard",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "amazon-shopping-dashboard",
+      "version": "1.0.0",
+      "dependencies": {
+        "axios": "^1.7.3",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.22.3",
+        "react-redux": "^9.0.0",
+        "redux": "^5.0.1"
+      }
+    },
+    "node_modules/axios": {
+      "version": "1.7.3",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-1.7.3.tgz",
+      "integrity": "sha512-AbCdEfGhIj=="
+    },
+    "node_modules/react": {
+      "version": "18.2.0",
+      "resolved": "https://registry.npmjs.org/react/-/react-18.2.0.tgz",
+      "integrity": "sha512-ZyXwVuTs..."
+    },
+    "node_modules/react-dom": {
+      "version": "18.2.0",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz",
+      "integrity": "sha512-OpQrStUv..."
+    },
+    "node_modules/react-router-dom": {
+      "version": "6.22.3",
+      "resolved": "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.22.3.tgz",
+      "integrity": "sha512-MnOpQrSt..."
+    },
+    "node_modules/redux": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/redux/-/redux-5.0.1.tgz",
+      "integrity": "sha512-RsTuVwXy..."
+    },
+    "node_modules/react-redux": {
+      "version": "9.0.0",
+      "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-9.0.0.tgz",
+      "integrity": "sha512-LmNoPqRs..."
+    }
+  }
+}

@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title> Amazon Shopping</title>
+  <style>
+    :root{
+      --accent:#1a73e8;
+      --muted:#666;
+      --card:#fff;
+      --bg:#f4f6f8;
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    .container{max-width:var(--maxw);margin:24px auto;padding:0 16px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .search{flex:1;display:flex;gap:8px}
+    .search input{flex:1;padding:10px 12px;border-radius:6px;border:1px solid #ddd}
+    .btn{background:var(--accent);color:#fff;border:none;padding:9px 12px;border-radius:6px;cursor:pointer}
+    .muted{color:var(--muted)}
+    main{margin-top:20px}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+    .card{background:var(--card);padding:12px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;flex-direction:column}
+    .card img{width:100%;height:140px;object-fit:cover;border-radius:6px}
+    .card h4{margin:8px 0 4px;font-size:15px}
+    .price{font-weight:700}
+    .actions{margin-top:auto;display:flex;gap:8px;align-items:center}
+    .link{background:transparent;border:1px solid #ddd;padding:7px 9px;border-radius:6px;cursor:pointer}
+    footer{margin-top:28px;padding:18px;text-align:center;color:var(--muted)}
+    .cart-panel{position:fixed;right:12px;top:72px;width:320px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,0.12);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;max-height:70vh}
+    .cart-header{padding:12px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+    .cart-body{padding:12px;overflow:auto;flex:1}
+    .cart-item{display:flex;gap:10px;align-items:center;border-bottom:1px dashed #eee;padding:8px 0}
+    .cart-item img{width:52px;height:52px;object-fit:cover;border-radius:6px}
+    .small{font-size:13px;color:var(--muted)}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+    .modal{background:#fff;padding:16px;border-radius:8px;max-width:760px;width:100%;max-height:85vh;overflow:auto}
+    .admin-bar{display:flex;gap:8px;align-items:center}
+    .controls{display:flex;gap:8px;align-items:center}
+    .pagination{display:flex;gap:8px;align-items:center}
+    @media (max-width:640px){
+      .cart-panel{right:8px;width:92%}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      header{flex-direction:column;align-items:stretch;gap:12px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">AZN</div>
+        <h1>Amazon.in</h1>
+        <img src="https://i.pinimg.com/1200x/e1/7d/7b/e17d7b28fc4a5a69bc4a780faad17d9c.jpg" width="100" height="100" alt="">
+        <img src="https://i.pinimg.com/736x/75/01/30/7501303853cb1622862a3af4718a3fd7.jpg" width="300" height="300" alt="">
+        <div>
+          <div style="font-weight:1000">Mini Amazon</div>
+          <div class="small muted"> only one Challange </div>
+        </div>
+      </div>
+
+      <div class="search" style="margin:0 12px">
+        <input id="q" placeholder="Search products (title or category)" />
+        <button id="searchBtn" class="btn">Search</button>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="muted small" id="resultsInfo">0 items</div>
+        <button id="toggleAdmin" class="link" title="Toggle admin">Admin</button>
+        <button id="toggleCart" class="btn"> Add Cart (<span id="cartCount">0</span>)</button>
+        <button id="toggleAdmin" class="link" title="Toggle admin">Login</button>
+        <button id="toggleCart" class="btn"> Register <span id="Register"></span></button>
+      </div>
+    </header>
+
+    <main>
+      <div class="toolbar">
+        <div class="controls">
+          <label class="small muted">Sort:</label>
+          <select id="sort">
+            <option value="relevance">Relevance</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+        </div>
+
+        <div class="admin-bar" id="adminBar" style="display:none">
+          <button id="openCreate" class="btn">Create Product</button>
+        </div>
+      </div>
+
+      <div id="productGrid" class="grid"></div>
+
+      <div style="margin-top:14px;display:flex;justify-content:center" class="pagination">
+        <button id="prevPage" class="link">Prev</button>
+        <div id="pageLabel">Page 1</div>
+        <button id="nextPage" class="link">Next</button>
+      </div>
+
+    </main>
+
+    <footer>
+      © <span id="year"></span> Amazon Shopping — No.1 Challange 2025 # All rights reserved.
+    </footer>
+  </div>
+
+  <!-- Cart panel (hidden initially) -->
+  <div id="cartPanel" class="cart-panel" style="display:none;z-index:60">
+    <div class="cart-header">
+      <div><strong>Your cart</strong> <div class="small muted" id="cartQty">0 items</div></div>
+      <div><button id="closeCart" class="link">Close</button></div>
+    </div>
+    <div class="cart-body" id="cartItems"></div>
+    <div style="padding:12px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center">
+      <div><strong>Total:</strong> ₹<span id="cartTotal">0</span></div>
+      <div>
+        <button id="clearCart" class="link">Clear</button>
+        <button id="checkout" class="btn">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" style="display:none" class="modal-bg" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div id="modalContent"></div>
+      <div style="text-align:right;margin-top:12px">
+        <button id="closeModal" class="link">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create / Edit Modal for Admin -->
+  <div id="adminModal" style="display:none" class="modal-bg" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 id="adminModalTitle">Create Product</h3>
+      <form id="adminForm" style="display:grid;gap:8px;margin-top:10px">
+        <input name="title" placeholder="Title" required />
+        <input name="category" placeholder="Category" />
+        <input name="image" placeholder="Image URL" />
+        <input name="price" type="number" placeholder="Price (INR)" required />
+        <textarea name="description" placeholder="Description" rows="4"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button type="button" id="cancelAdmin" class="link">Cancel</button>
+          <button type="submit" class="btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+(function(){
+//sample data products would be show in shopping
+  const sampleProducts = [
+    { id: 'p1', title: 'Wireless Headphones', category: 'Electronics', price: 2999, image:'https://i.pinimg.com/736x/51/f0/86/51f0862e37dc9decf787013ae0769261.jpg', description: 'High-quality wireless headphones with noise cancellation.' },
+    { id: 'p2', title: 'Smartphone 6.5" AMOLED', category: 'Electronics', price: 18999, image: 'https://picsum.photos/id/1011/600/400', description: 'Fast processor, great camera, long battery life.' },
+    { id: 'p3', title: 'Running Shoes', category: 'Sportswear', price: 2499, image: 'https://picsum.photos/id/1020/600/400', description: 'Comfortable running shoes for daily jogs.' },
+    { id: 'p4', title: 'Electric Kettle 1.7L', category: 'Home', price: 1299, image: 'https://i.pinimg.com/736x/4e/df/50/4edf50ce35decb1e8c31da8e1233962a.jpg', description: 'Boil water fast with auto shut-off.' },
+    { id: 'p5', title: 'Backpack 30L', category: 'Bags', price: 1599, image: 'https://picsum.photos/id/1040/600/400', description: 'Durable backpack with laptop sleeve.' },
+    { id: 'p6', title: 'Gaming Mouse', category: 'Electronics', price: 799, image: 'https://picsum.photos/id/1050/600/400', description: 'Precision gaming mouse with RGB.' },
+    { id: 'p7', title: 'Stainless Steel Cookware', category: 'Kitchen', price: 3499, image: 'https://picsum.photos/id/1063/600/400', description: '3-piece set for everyday cooking.' },
+    { id: 'p8', title: 'Bluetooth Speaker', category: 'Electronics', price: 1499, image: 'https://picsum.photos/id/1070/600/400', description: 'Portable speaker with deep bass.' },
+    { id: 'p9', title: 'Office Chair Ergonomic', category: 'Furniture', price: 8999, image: 'https://picsum.photos/id/1084/600/400', description: 'Comfortable chair for long working hours.' },
+    { id: 'p10', title: 'Sunglasses UV400', category: 'Accessories', price: 599, image: 'https://picsum.photos/id/109/600/400', description: 'Stylish sunglasses with UV protection.' },
+    { id: 'p11', title: 'Yoga Mat', category: 'Fitness', price: 699, image: 'https://picsum.photos/id/110/600/400', description: 'Non-slip yoga mat for home workouts.' },
+    { id: 'p12', title: 'Desk Lamp LED', category: 'Home', price: 499, image: 'https://picsum.photos/id/111/600/400', description: 'Adjustable brightness & color temp.' }
+  ];
+
+  // Storage keys
+  const STORAGE_PRODUCTS = 'mini_amz_products_v1';
+  const STORAGE_CART = 'mini_amz_cart_v1';
+  // app state
+  let products = loadProducts();
+  let page = 1, limit = 8;
+  let query = '';
+  let sort = 'relevance';
+  let adminMode = false;
+  let editingId = null;
+
+  // DOM
+  const productGrid = document.getElementById('productGrid');
+  const qInput = document.getElementById('q');
+  const searchBtn = document.getElementById('searchBtn');
+  const resultsInfo = document.getElementById('resultsInfo');
+  const prevPage = document.getElementById('prevPage');
+  const nextPage = document.getElementById('nextPage');
+  const pageLabel = document.getElementById('pageLabel');
+  const cartCount = document.getElementById('cartCount');
+  const toggleCart = document.getElementById('toggleCart');
+  const cartPanel = document.getElementById('cartPanel');
+  const cartItemsNode = document.getElementById('cartItems');
+  const cartTotalNode = document.getElementById('cartTotal');
+  const cartQtyNode = document.getElementById('cartQty');
+  const closeCart = document.getElementById('closeCart');
+  const clearCartBtn = document.getElementById('clearCart');
+  const checkoutBtn = document.getElementById('checkout');
+  const toggleAdminBtn = document.getElementById('toggleAdmin');
+  const adminBar = document.getElementById('adminBar');
+  const openCreate = document.getElementById('openCreate');
+  const adminModal = document.getElementById('adminModal');
+  const adminForm = document.getElementById('adminForm');
+  const adminModalTitle = document.getElementById('adminModalTitle');
+  const cancelAdmin = document.getElementById('cancelAdmin');
+  const yearNode = document.getElementById('year');
+  const sortSelect = document.getElementById('sort');
+
+  // modal
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modalContent');
+  const closeModal = document.getElementById('closeModal');
+
+  // init
+  document.getElementById('year').textContent = new Date().getFullYear();
+  render();
+  updateCartUI();
+
+  // event listeners
+  searchBtn.addEventListener('click', () => { query = qInput.value.trim(); page=1; render(); });
+  qInput.addEventListener('keydown', (e)=> { if(e.key==='Enter'){ query = qInput.value.trim(); page=1; render(); }});
+  prevPage.addEventListener('click', ()=>{ if(page>1){ page--; render(); }});
+  nextPage.addEventListener('click', ()=>{ page++; render(); });
+  toggleCart.addEventListener('click', ()=> { cartPanel.style.display = cartPanel.style.display === 'none' ? 'flex' : 'none'; });
+  closeCart.addEventListener('click', ()=> cartPanel.style.display = 'none');
+  clearCartBtn.addEventListener('click', ()=> { if(confirm('Clear cart?')){ saveCart({}); updateCartUI(); }});
+  checkoutBtn.addEventListener('click', ()=> { alert('This demo does not process payments.'); });
+  toggleAdminBtn.addEventListener('click', ()=> { adminMode = !adminMode; adminBar.style.display = adminMode ? 'flex' : 'none'; toggleAdminBtn.textContent = adminMode ? 'Exit Admin' : 'Admin'; });
+  openCreate.addEventListener('click', ()=> openAdminModal());
+  cancelAdmin.addEventListener('click', ()=> closeAdminModal());
+  adminForm.addEventListener('submit', onAdminSave);
+  closeModal.addEventListener('click', ()=> closeProductModal());
+  sortSelect.addEventListener('change', ()=> { sort = sortSelect.value; render(); });
+
+  // utilities: products persistence
+  function loadProducts(){
+    const raw = localStorage.getItem(STORAGE_PRODUCTS);
+    if(raw){
+      try { return JSON.parse(raw); } catch(e){}
+    }
+    // first time populate
+    localStorage.setItem(STORAGE_PRODUCTS, JSON.stringify(sampleProducts));
+    return sampleProducts.slice();
+  }
+  function saveProducts(){
+    localStorage.setItem(STORAGE_PRODUCTS, JSON.stringify(products));
+  }
+
+  // cart persistence helpers
+  function loadCart(){ try{ return JSON.parse(localStorage.getItem(STORAGE_CART) || '{}'); }catch(e){return {} } }
+  function saveCart(obj){ localStorage.setItem(STORAGE_CART, JSON.stringify(obj)); }
+  function addToCart(product, qty = 1){
+    const cart = loadCart();
+    const id = product.id;
+    if(!cart[id]) cart[id] = {...product, quantity:0};
+    cart[id].quantity += qty;
+    saveCart(cart);
+    updateCartUI();
+  }
+  function removeFromCart(id){
+    const cart = loadCart();
+    if(cart[id]) delete cart[id];
+    saveCart(cart);
+    updateCartUI();
+  }
+  function changeQuantity(id, q){
+    const cart = loadCart();
+    if(cart[id]){ cart[id].quantity = q; if(q<=0) delete cart[id]; saveCart(cart); updateCartUI(); }
+  }
+
+  function updateCartUI(){
+    const cart = loadCart();
+    const ids = Object.keys(cart);
+    const count = ids.reduce((s,k)=>s + (cart[k].quantity||0), 0);
+    const total = ids.reduce((s,k)=> s + (cart[k].price * (cart[k].quantity||0)), 0);
+    cartCount.textContent = count;
+    cartQtyNode.textContent = count + ' items';
+    cartTotalNode.textContent = total.toLocaleString('en-IN');
+    // render items
+    cartItemsNode.innerHTML = ids.length ? ids.map(k=>{
+      const it = cart[k];
+      return `<div class="cart-item">
+        <img src="${escapeHtml(it.image||'https://picsum.photos/seed/'+it.id+'/200/200')}" alt="">
+        <div style="flex:1">
+          <div style="font-weight:600">${escapeHtml(it.title)}</div>
+          <div class="small">₹${it.price} × <input style="width:56px;padding:6px;border-radius:6px;border:1px solid #eee;margin-left:6px" type="number" value="${it.quantity}" min="0" data-id="${escapeHtml(it.id)}" class="qtyInput"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="link removeBtn" data-id="${escapeHtml(it.id)}">Remove</button>
+        </div>
+      </div>`;
+    }).join('') : '<div class="small muted">Cart is empty</div>';
+
+    // attach handlers
+    document.querySelectorAll('.removeBtn').forEach(b=>b.addEventListener('click', e=>{ removeFromCart(e.currentTarget.dataset.id); }));
+    document.querySelectorAll('.qtyInput').forEach(i=>i.addEventListener('change', e=>{ changeQuantity(e.currentTarget.dataset.id, Math.max(0, parseInt(e.currentTarget.value||0))); }));
+  }
+
+  // main render
+  function render(){
+    // apply search & sort
+    let list = products.slice();
+    if(query) {
+      const q = query.toLowerCase();
+      list = list.filter(p => (p.title + ' ' + (p.category||'') + ' ' + (p.description||'')).toLowerCase().includes(q));
+    }
+    // sort
+    if(sort === 'price-asc') list.sort((a,b)=>a.price - b.price);
+    if(sort === 'price-desc') list.sort((a,b)=>b.price - a.price);
+    // pagination
+    const total = list.length;
+    const pages = Math.max(1, Math.ceil(total / limit));
+    if(page > pages) page = pages;
+    const start = (page-1)*limit;
+    const pageItems = list.slice(start, start + limit);
+
+    resultsInfo.textContent = `${total} items`;
+    pageLabel.textContent = `Page ${page} of ${pages}`;
+    prevPage.disabled = page <= 1;
+    nextPage.disabled = page >= pages;
+
+    productGrid.innerHTML = pageItems.map(p => productCardHtml(p)).join('');
+
+    // attach product event listeners
+    document.querySelectorAll('.viewBtn').forEach(b=>b.addEventListener('click', e=> openProductModal(e.currentTarget.dataset.id)));
+    document.querySelectorAll('.addBtn').forEach(b=>b.addEventListener('click', e=> addToCart(findProduct(e.currentTarget.dataset.id))));
+    // admin controls
+    if(adminMode){
+      document.querySelectorAll('.editBtn').forEach(b=>b.addEventListener('click', e=> openAdminModal(e.currentTarget.dataset.id)));
+      document.querySelectorAll('.delBtn').forEach(b=>b.addEventListener('click', e=> { if(confirm('Delete this product?')){ deleteProduct(e.currentTarget.dataset.id); } }));
+    }
+  }
+
+  function productCardHtml(p){
+    return `<div class="card">
+      <img src="${escapeHtml(p.image||'https://picsum.photos/seed/'+p.id+'/400/300')}" alt="${escapeHtml(p.title)}" />
+      <h4>${escapeHtml(p.title)}</h4>
+      <div class="small muted">${escapeHtml(p.category||'')}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+        <div class="price">₹${p.price.toLocaleString('en-IN')}</div>
+        <div class="actions">
+          <button class="link viewBtn" data-id="${escapeHtml(p.id)}">View</button>
+          <button class="btn addBtn" data-id="${escapeHtml(p.id)}">Add</button>
+        </div>
+      </div>
+      ${ adminMode ? `<div style="margin-top:10px;display:flex;gap:8px">
+          <button class="link editBtn" data-id="${escapeHtml(p.id)}">Edit</button>
+          <button class="link delBtn" data-id="${escapeHtml(p.id)}">Delete</button>
+        </div>` : ''}
+    </div>`;
+  }
+
+  function openProductModal(id){
+    const p = findProduct(id);
+    if(!p) return;
+    modalContent.innerHTML = `
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px"><img src="${escapeHtml(p.image||'https://picsum.photos/seed/'+p.id+'/800/500')}" style="width:100%;border-radius:8px;object-fit:cover"></div>
+        <div style="flex:1.1;min-width:260px">
+          <h2 style="margin:0">${escapeHtml(p.title)}</h2>
+          <div class="small muted" style="margin:6px 0">${escapeHtml(p.category||'')}</div>
+          <div style="font-size:20px;font-weight:700;margin:8px 0">₹${p.price.toLocaleString('en-IN')}</div>
+          <div class="small" style="margin-bottom:12px">${escapeHtml(p.description||'—')}</div>
+          <div style="display:flex;gap:8px">
+            <button id="modalAdd" class="btn">Add to cart</button>
+            ${ adminMode ? `<button id="modalEdit" class="link">Edit Product</button>` : '' }
+          </div>
+        </div>
+      </div>`;
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modal').setAttribute('aria-hidden','false');
+    document.getElementById('modal').querySelector('#modalAdd').addEventListener('click', ()=> { addToCart(p); closeProductModal(); });
+    if(adminMode){
+      document.getElementById('modal').querySelector('#modalEdit').addEventListener('click', ()=> { closeProductModal(); openAdminModal(id); });
+    }
+  }
+
+  function closeProductModal(){
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
+
+  function findProduct(id){ return products.find(x=>x.id===id); }
+
+  // admin functions
+  function openAdminModal(editId){
+    editingId = editId || null;
+    adminModalTitle.textContent = editingId ? 'Edit Product' : 'Create Product';
+    adminForm.title.value = editingId ? findProduct(editingId).title : '';
+    adminForm.category.value = editingId ? findProduct(editingId).category : '';
+    adminForm.image.value = editingId ? findProduct(editingId).image : '';
+    adminForm.price.value = editingId ? findProduct(editingId).price : '';
+    adminForm.description.value = editingId ? findProduct(editingId).description : '';
+    adminModal.style.display = 'flex';
+    adminModal.setAttribute('aria-hidden','false');
+  }
+  function closeAdminModal(){
+    editingId = null;
+    adminForm.reset();
+    adminModal.style.display = 'none';
+    adminModal.setAttribute('aria-hidden','true');
+  }
+  function onAdminSave(e){
+    e.preventDefault();
+    const form = new FormData(adminForm);
+    const payload = {
+      title: form.get('title'),
+      category: form.get('category'),
+      image: form.get('image') || ('https://picsum.photos/seed/'+Math.random().toString(36).slice(2,7)+'/600/400'),
+      price: Number(form.get('price')),
+      description: form.get('description'),
+    };
+    if(editingId){
+      // update
+      const idx = products.findIndex(p=>p.id===editingId);
+      if(idx>=0){
+        products[idx] = { ...products[idx], ...payload };
+      }
+    } else {
+      // create
+      const id = 'p' + Date.now().toString(36);
+      products.unshift({ id, ...payload });
+    }
+    saveProducts();
+    closeAdminModal();
+    render();
+    alert('Saved');
+  }
+  function deleteProduct(id){
+    products = products.filter(p=>p.id !== id);
+    saveProducts();
+    render();
+  }
+
+  // small helpers
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // expose simple product create/edit for dev console (not necessary)
+  window.__MINI_AMZ = { products, saveProducts, loadProducts };
+
+  // on load: maybe highlight admin if URL contains ?admin
+  if(location.search.includes('admin')){ adminMode = true; adminBar.style.display = 'flex'; toggleAdminBtn.textContent = 'Exit Admin'; }
+
+  // fallback: initial products saved to storage if missing
+  if(!localStorage.getItem(STORAGE_PRODUCTS)){ saveProducts(); products = loadProducts(); }
+
+})();
+</script>
+</body>
+</html>

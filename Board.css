@@ -1,0 +1,161 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Global */
+body {
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+/* Navbar */
+nav {
+  background: #232f3e;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 16px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #ff9900;
+}
+
+/* Dashboard Container */
+.dashboard {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.dashboard h1 {
+  font-size: 24px;
+  color: #232f3e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* User Form */
+.form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.form input:focus {
+  border-color: #232f3e;
+}
+
+.form button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.form button[type="submit"] {
+  background: #ff9900;
+  color: #fff;
+}
+
+.form button[type="submit"]:hover {
+  background: #e68a00;
+}
+
+.form button[type="button"] {
+  background: #ccc;
+  color: #333;
+}
+
+.form button[type="button"]:hover {
+  background: #aaa;
+}
+
+/* User List */
+.user-list {
+  list-style: none;
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.user-card strong {
+  color: #232f3e;
+  font-size: 16px;
+}
+
+.user-card small {
+  color: #666;
+}
+
+/* Buttons inside list */
+.user-card button {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.user-card button:first-of-type {
+  background: #ffc107;
+  color: #232f3e;
+}
+
+.user-card button:first-of-type:hover {
+  background: #e0a800;
+}
+
+.user-card button:last-of-type {
+  background: #dc3545;
+  color: #fff;
+}
+
+.user-card button:last-of-type:hover {
+  background: #b02a37;
+}
